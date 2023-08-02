@@ -18,17 +18,16 @@ public class CamelRoute extends RouteBuilder {
 		// TODO Auto-generated method stub
 
 		from("direct:fetchUserData")
-
 				.process(exchange -> {
-
 					pageNo = exchange.getIn().getHeader("pageNo", Integer.class);
-
 					setIds(exchange.getIn().getHeader("ids", List.class));
 					filteredData.clear();
-
-				}).setHeader("CamelHttpMethod", constant("GET"))
-				.setHeader("CamelHttpQuery", simple("page=${header.pageNo}")).toD("https://reqres.in/api/users").split()
-				.jsonpath("$.data").process(exchange -> {
+				})
+				.setHeader("CamelHttpMethod", constant("GET"))
+				.setHeader("CamelHttpQuery", simple("page=${header.pageNo}"))
+				.toD("https://reqres.in/api/users")
+				.split().jsonpath("$.data")
+				.process(exchange -> {
 					String data = exchange.getIn().getBody(String.class);
 					String idString = data.substring(data.indexOf('=') + 1, data.indexOf(',')).trim();
 					int id = Integer.parseInt(idString);
